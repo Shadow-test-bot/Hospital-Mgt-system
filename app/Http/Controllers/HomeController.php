@@ -16,9 +16,10 @@ class HomeController extends Controller
 {
     public function redirect()
     {
-        if(Auth::id()){
-            if(Auth::user()->usertype=='0'){
-                $doctor = doctor::all();
+        if(Auth::check()){
+            $user = Auth::user();
+            if($user && $user->usertype == '0'){
+                $doctor = Doctor::all();
 
                 return view('user.home', compact('doctor'));
             }
@@ -28,60 +29,79 @@ class HomeController extends Controller
 
         }
         else {
-            return redirect()->back();
+            return redirect('/');
         }
     }
 
     public function index()
     {
-        if(Auth::id())
+        if(Auth::check())
         {
-            return redirect('home');
+            $user = Auth::user();
+            if($user && $user->usertype == '0'){
+                $doctor = Doctor::all();
+                return view('user.home', compact('doctor'));
+            }
+            else{
+                return view('admin.home');
+            }
         }
         else{
-            $doctor = doctor::all();
+            $doctor = Doctor::all();
             return view('user.home', compact('doctor'));
         }
     }
 
+    public function showAppointmentForm()
+    {
+        $doctor = Doctor::all();
+        return view('user.appointment', compact('doctor'));
+    }
+
     public function appointment(Request $request)
     {
-        $data = new appointment;
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'date' => 'required|date',
+            'doctor' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
 
-        $data->name=$request->name;
-        $data->email=$request->email;
-        $data->phone=$request->number;
-        $data->doctor=$request->doctor;
-        $data->date=$request->date;
-        $data->message=$request->message;
-        $data->status='In Progress';
+        $data = new Appointment;
 
-        if(Auth::id())
-        {
-            $data->user_id=Auth::user()->id;
-        }
-        
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->number;
+        $data->doctor = $request->doctor;
+        $data->date = $request->date;
+        $data->message = $request->message;
+        $data->status = 'In Progress';
+        $data->user_id = Auth::user()->id;
+
         $data->save();
 
-        return redirect()->back()->with('message', 
+        return redirect()->back()->with('message',
         'Your appointment request is successful, we shall contact you soon');
-        
+
     }
 
     public function myappointments()
     {
-        if(Auth::id())
+        if(Auth::check())
         {
-            if(Auth::user()->usertype==0)
+            $user = Auth::user();
+            if($user && $user->usertype == 0)
             {
-                $userid=Auth::user()->id;
-                $appoint=appointment::where('user_id', $userid)->get();
+                $userid = $user->id;
+                $appoint = Appointment::where('user_id', $userid)->get();
 
                 return view('user.my_appointments', compact('appoint'));
             }
-            else 
+            else
             {
-                return redirect()->back();
+                return redirect('login');
             }
         }
         else
@@ -92,17 +112,30 @@ class HomeController extends Controller
 
     public function cancel_appoint($id)
     {
-        $data = appointment::find($id);
+        $data = Appointment::find($id);
 
         $data->delete();
 
         return redirect()->back();
     }
 
-    public function doctor_view()
+    public function doctor_view(Request $request)
     {
-        $doctor = doctor::all();
+        $query = $request->get('q');
+        if($query){
+            $doctor = Doctor::where('name', 'like', '%' . $query . '%')
+                            ->orWhere('speciality', 'like', '%' . $query . '%')
+                            ->get();
+        } else {
+            $doctor = Doctor::all();
+        }
         return view('user.doctor_view', compact('doctor'));
+    }
+
+    public function doctor_detail($id)
+    {
+        $doctor = Doctor::findOrFail($id);
+        return view('user.doctor_detail', compact('doctor'));
     }
 
     public function news()

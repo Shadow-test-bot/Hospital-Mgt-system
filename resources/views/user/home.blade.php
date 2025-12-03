@@ -81,7 +81,7 @@
 
             @auth
 
-            <li class="nav-item"> 
+            <li class="nav-item">
               <a class="nav-link" href="{{url('myappointments')}}">My Appointments</a>
             </li>
             <x-app-layout>
@@ -183,10 +183,12 @@
   </div> <!-- .bg-light -->
 
   @include('user.doctor')
-  
+
   @include ('user.latest')
 
+  @auth
   @include('user.appointment')
+  @endauth
 
   <footer class="page-footer">
     <div class="container">

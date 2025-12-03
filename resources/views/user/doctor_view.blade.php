@@ -52,12 +52,12 @@
       <div class="container">
         <a class="navbar-brand" href="{{url('/')}}"><span class="text-primary">One</span>-Health</a>
 
-        <form action="#">
+        <form action="{{url('doctor_view')}}" method="get">
           <div class="input-group input-navbar">
             <div class="input-group-prepend">
               <span class="input-group-text" id="icon-addon1"><span class="mai-search"></span></span>
             </div>
-            <input type="text" class="form-control" placeholder="Enter keyword.." aria-label="Username" aria-describedby="icon-addon1">
+            <input type="text" name="q" class="form-control" placeholder="Search doctors.." aria-label="Search" aria-describedby="icon-addon1">
           </div>
         </form>
 
@@ -109,6 +109,11 @@
     </nav>
   </header>
   @include('user.doctor')
+
+  @auth
+  @include('user.appointment')
+  @endauth
+
   <div class="page-section banner-home bg-image" style="background-image: url(../assets/img/banner-pattern.svg);">
     <div class="container py-5 py-lg-0">
       <div class="row align-items-center">

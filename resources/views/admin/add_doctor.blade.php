@@ -69,13 +69,25 @@
                     </div>
 
                     <div style="padding: 15px;">
+                        <label>Email</label>
+                        <input type="email" style="color: black;" name="email"
+                        placeholder="Type in the Email" required="">
+                    </div>
+
+                    <div style="padding: 15px;">
+                        <label>Password</label>
+                        <input type="password" style="color: black;" name="password"
+                        placeholder="Type in the Password" required="">
+                    </div>
+
+                    <div style="padding: 15px;">
                         <label>Doctor Image</label>
                         <input type="file" name="file" required="">
-                    </div> 
+                    </div>
 
                     <div style="padding: 15px;">
                         <input type="submit" class="btn btn-success">
-                    </div> 
+                    </div>
 
                 </form>
             </div>

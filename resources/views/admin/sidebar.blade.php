@@ -36,5 +36,23 @@
             </a>
           </li>
 
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ url('admin/departments')}}">
+              <span class="menu-icon">
+                <i class="mdi mdi-folder"></i>
+              </span>
+              <span class="menu-title">Departments</span>
+            </a>
+          </li>
+
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ url('admin/users')}}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Users</span>
+            </a>
+          </li>
+
         </ul>
         </nav>

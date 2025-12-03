@@ -8,14 +8,14 @@
         <div class="item">
           <div class="card-doctor">
             <div class="header">
-              <img style="height: 300px; !important"src="doctorimage/{{$doctors->image}}" alt="">
+              <img style="height: 300px; !important" src="{{ asset('doctorimage/' . $doctors->image) }}" alt="">
               <div class="meta">
                 <a href="#"><span class="mai-call"></span></a>
                 <a href="#"><span class="mai-logo-whatsapp"></span></a>
               </div>
             </div>
             <div class="body">
-              <p class="text-xl mb-0">{{$doctors->name}}</p>
+              <p class="text-xl mb-0"><a href="{{ url('doctor/' . $doctors->id) }}" style="color: inherit; text-decoration: none;">{{$doctors->name}}</a></p>
               <span class="text-sm text-grey">{{ $doctors->speciality }}</span>
             </div>
           </div>
