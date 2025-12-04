@@ -1,80 +1,59 @@
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <base href="/public">
+@extends('admin.layout')
 
-    <style text="text/css">
-        label{
-            display: inline-block;
-            width: 200px;
-        }
-    </style>
-    @include('admin.css')
-  </head>
-  <body>
-    <div class="container-scroller">
-        <!-- partial:partials/_sidebar.html -->
+@section('title', 'Send Email')
 
-        @include('admin.sidebar')
-      
-        <!-- partial -->
+@section('content')
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Send Email to Patient</h2>
+        <p><strong>Patient:</strong> {{ $data->name }} | <strong>Email:</strong> {{ $data->email }}</p>
+    </div>
+</div>
 
-        @include('admin.navbar')
-
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            
-            <div class="container" style="padding-top: 20px;">
-                @if(session()->has('message'))
-
-                    <div class="alert alert-success">   
-                        <button type="button" class="close" data-dismiss="alert"> x </button>   
-                        {{session()->get('message')}}
-                    </div>
-                @endif
-
-                <form action="{{url('sendemail',$data->id)}}" method="POST" >
-
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Email Details</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{url('sendemail',$data->id)}}" method="POST">
                     @csrf
 
-                    <div style="padding: 15px;">
-                        <label>Greeting</label>
-                        <input type="text" style="color: black;" name="greeting" required="">
+                    <div class="mb-3">
+                        <label for="greeting" class="form-label">Greeting</label>
+                        <input type="text" class="form-control" id="greeting" name="greeting" placeholder="e.g., Dear Patient" required>
                     </div>
 
-                    <div style="padding: 15px;">
-                        <label>Body</label>
-                        <input type="text" style="color: black;" name="body" required="">
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Body</label>
+                        <textarea class="form-control" id="body" name="body" rows="4" placeholder="Enter the main message" required></textarea>
                     </div>
 
-                    <div style="padding: 15px;">
-                        <label>Action Text</label>
-                        <input type="text" style="color: black;" name="actiontext" required="">
-                    </div>
-                    
-                    <div style="padding: 15px;">
-                        <label>Action Url</label>
-                        <input type="text" style="color: black;" name="actionurl" required="">
-                    </div>
-                    
-                    <div style="padding: 15px;">
-                        <label>End Part</label>
-                        <input type="text" style="color: black;" name="endpart" required="">
+                    <div class="mb-3">
+                        <label for="actiontext" class="form-label">Action Text</label>
+                        <input type="text" class="form-control" id="actiontext" name="actiontext" placeholder="e.g., View Details" required>
                     </div>
 
-                    
+                    <div class="mb-3">
+                        <label for="actionurl" class="form-label">Action URL</label>
+                        <input type="url" class="form-control" id="actionurl" name="actionurl" placeholder="e.g., https://example.com" required>
+                    </div>
 
-                    <div style="padding: 15px;">
-                        <input type="submit" class="btn btn-success">
-                    </div> 
+                    <div class="mb-3">
+                        <label for="endpart" class="form-label">End Part</label>
+                        <input type="text" class="form-control" id="endpart" name="endpart" placeholder="e.g., Best regards, Hospital Team" required>
+                    </div>
 
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Send Email
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    @include('admin.script')
-  </body>
-</html>
+    </div>
+</div>
+@endsection

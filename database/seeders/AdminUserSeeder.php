@@ -24,6 +24,15 @@ class AdminUserSeeder extends Seeder
             'usertype' => '1',
         ]);
 
+        // Create doctor user
+        $doctorUser = User::firstOrCreate([
+            'email' => 'doctor@doctor.com',
+        ], [
+            'name' => 'Dr. John Doe',
+            'password' => Hash::make('doctor'),
+            'usertype' => '2',
+        ]);
+
         Doctor::firstOrCreate([
             'name' => 'Dr. John Doe',
         ], [
@@ -31,6 +40,7 @@ class AdminUserSeeder extends Seeder
             'room' => '101',
             'speciality' => 'Cardiology',
             'image' => 'doctorimage/default.jpg',
+            'user_id' => $doctorUser->id,
         ]);
 
         Doctor::firstOrCreate([

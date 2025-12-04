@@ -1,58 +1,46 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="admin/assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="admin/assets/images/logo-mini.svg" alt="logo" /></a>
-        </div>
-        <ul class="nav">
-          <li class="nav-item nav-category">
-            <span class="nav-link">Navigation</span>
-          </li>
-          
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ url('add_doctor_view')}}">
-              <span class="menu-icon">
-                <i class="mdi mdi-file-document-box"></i>
-              </span>
-              <span class="menu-title">Add Doctors</span>
-            </a>
-          </li>
+<div class="admin-sidebar">
+    <div class="p-4">
+        <h4 class="text-primary fw-bold mb-4">
+            <span class="text-primary">One</span>-Health
+        </h4>
+        <span class="text-muted small">Admin Panel</span>
+    </div>
 
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ url('showappointments')}}">
-              <span class="menu-icon">
-                <i class="mdi mdi-file-document-box"></i>
-              </span>
-              <span class="menu-title">Appointments</span>
+    <ul class="nav flex-column px-3">
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ url('admin/dashboard') }}">
+                <i class="mai-dashboard me-2"></i>Dashboard
             </a>
-          </li>
+        </li>
 
-          
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ url('showdoctors')}}">
-              <span class="menu-icon">
-                <i class="mdi mdi-file-document-box"></i>
-              </span>
-              <span class="menu-title">All Doctors</span>
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('add_doctor_view') ? 'active' : '' }}" href="{{ url('add_doctor_view') }}">
+                <i class="mai-plus me-2"></i>Add Doctor
             </a>
-          </li>
+        </li>
 
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ url('admin/departments')}}">
-              <span class="menu-icon">
-                <i class="mdi mdi-folder"></i>
-              </span>
-              <span class="menu-title">Departments</span>
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('showappointments') ? 'active' : '' }}" href="{{ url('showappointments') }}">
+                <i class="mai-calendar-check me-2"></i>Appointments
             </a>
-          </li>
+        </li>
 
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ url('admin/users')}}">
-              <span class="menu-icon">
-                <i class="mdi mdi-account-multiple"></i>
-              </span>
-              <span class="menu-title">Users</span>
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('showdoctors') ? 'active' : '' }}" href="{{ url('showdoctors') }}">
+                <i class="mai-people me-2"></i>All Doctors
             </a>
-          </li>
+        </li>
 
-        </ul>
-        </nav>
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('admin/departments*') ? 'active' : '' }}" href="{{ url('admin/departments') }}">
+                <i class="mai-hospital me-2"></i>Departments
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a class="nav-link {{ request()->is('admin/schedules*') ? 'active' : '' }}" href="{{ url('admin/schedules') }}">
+                <i class="mai-calendar me-2"></i>Doctor Schedules
+            </a>
+        </li>
+    </ul>
+</div>

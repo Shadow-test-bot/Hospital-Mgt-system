@@ -8,7 +8,7 @@
 
   <meta name="copyright" content="MACode ID, https://macodeid.com/">
 
-  <title>One Health - Medical Center HTML5 Template</title>
+  <title>One Health - Power </title>
 
   <link rel="stylesheet" href="../assets/css/maicons.css">
 
@@ -83,6 +83,14 @@
 
             <li class="nav-item">
               <a class="nav-link" href="{{url('myappointments')}}">My Appointments</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url('notifications')}}">
+                Notifications
+                @if(Auth::check() && Auth::user()->unreadNotifications->count() > 0)
+                  <span class="badge badge-danger">{{ Auth::user()->unreadNotifications->count() }}</span>
+                @endif
+              </a>
             </li>
             <x-app-layout>
             </x-app-layout>

@@ -1,0 +1,247 @@
+=====================================
+HOSPITAL MANAGEMENT SYSTEM PRESENTATION
+=====================================
+
+SLIDE 1: Introduction
+---------------------
+Hospital Management System: A Comprehensive Guide
+
+Welcome to the presentation of our Hospital Management System - a web-based application built with Laravel to streamline hospital operations.
+
+---
+
+SLIDE 2: Project Overview
+-------------------------
+Key Features:
+• Multi-role Authentication (Admin, Doctor, Patient)
+• Appointment Management
+• Doctor Management with Profiles
+• Department Organization
+• Notification System
+• Schedule Management
+
+Technology Stack:
+• Backend: Laravel 8.x PHP Framework
+• Frontend: Blade Templates, Tailwind CSS, Livewire
+• Authentication: Laravel Fortify, Jetstream
+• Database: MySQL
+• Notifications: Laravel Notifications with WebPush support
+
+---
+
+SLIDE 3: System Requirements and Setup
+---------------------------------------
+Prerequisites:
+• PHP 7.3 or higher (8.0+ recommended)
+• Composer
+• Node.js and NPM
+• MySQL 5.7+ or MariaDB 10.3+
+• Web server (Apache/Nginx) with mod_rewrite
+
+Installation Steps:
+1. Clone the repository
+2. Install PHP dependencies (composer install)
+3. Install Node dependencies (npm install)
+4. Environment configuration (.env setup)
+5. Database setup (migrations and seeding)
+6. Build assets (npm run dev/prod)
+7. Start application (php artisan serve)
+
+---
+
+SLIDE 4: Architecture and Technology Stack
+-------------------------------------------
+MVC Architecture:
+• Models: Represent database tables and business logic
+• Views: Blade templates for UI rendering
+• Controllers: Handle HTTP requests and responses
+
+Key Components:
+• Authentication & Authorization: Laravel Fortify, custom middleware
+• Notification System: Database-driven, email, WebPush
+• File Management: Profile photos, secure storage
+
+---
+
+SLIDE 5: Database Design
+------------------------
+Core Tables:
+
+Users Table:
+- id, name, email, phone, address, password, usertype, status, profile_photo_path
+
+Doctors Table:
+- id, name, phone, room, speciality, image, user_id, department_id, education, experience_years, biography, languages, certifications, awards, working_hours, address
+
+Appointments Table:
+- id, name, email, phone, doctor, date, message, status, user_id, department_id
+
+Departments Table:
+- id, name, description
+
+Notifications Table:
+- id, type, notifiable_type, notifiable_id, data, read_at
+
+Relationships:
+- User has many Appointments
+- Doctor belongs to User and Department
+- Department has many Doctors
+- Appointment belongs to User and Department
+
+---
+
+SLIDE 6: User Roles and Permissions
+-----------------------------------
+Role Definitions:
+
+Admin (usertype: 1):
+Permissions: Full system access, manage doctors, appointments, departments, send emails, view all data
+Key Routes: /admin/dashboard, /add_doctor_view, /showappointments, /showdoctors, etc.
+
+Doctor (usertype: 2):
+Permissions: View assigned appointments, manage personal schedule, update availability
+Key Routes: /doctor/appointments, /doctor/doctor-schedule, /doctor/user-schedule
+
+Patient/User (usertype: 0):
+Permissions: Book appointments, view personal appointments, cancel own appointments, view doctor profiles, receive notifications
+Key Routes: /appointment, /myappointments, /cancel_appoint, /doctors, /notifications
+
+Authentication Flow:
+1. User registers/logs in via Fortify
+2. Role-based redirection in HomeController
+3. Middleware protection for role-specific routes
+
+---
+
+SLIDE 7: Core Features
+----------------------
+Appointment Management:
+• Booking Process: Select doctor/department, fill form, submit (pending status)
+• Admin reviews and approves/rejects
+• Notifications sent to user and doctor
+• Status Flow: Pending → Approved/Cancelled
+
+Doctor Management:
+• Profile Features: Personal info, professional details, department assignment, profile image, working hours
+• Schedule Management: Doctor availability, patient scheduling, time slot management
+
+Notification System:
+• Types: Appointment status updates, new requests, schedule changes, announcements
+• Delivery: In-app (database), email, WebPush notifications
+
+Department Organization:
+• Features: Create/edit/delete departments, assign doctors, department-based filtering, hierarchical organization
+
+---
+
+SLIDE 8: API Documentation
+--------------------------
+Web Routes Overview:
+
+Public Routes:
+GET / → Redirect to login
+GET /login → Login page
+GET /register → Registration page
+
+Authenticated Routes:
+GET /home → Role-based redirect
+GET /dashboard → User dashboard
+GET /appointment → Booking form
+POST /appointment → Submit appointment
+GET /myappointments → User's appointments
+GET /cancel_appoint/{id} → Cancel appointment
+GET /doctors → List all doctors
+GET /doctor/{id} → Doctor details
+GET /notifications → User notifications
+GET /notification/read/{id} → Mark notification read
+
+Admin Routes (Role: 1):
+GET /admin/dashboard → Admin dashboard
+GET /add_doctor_view → Add doctor form
+POST /upload_doctor → Create doctor
+GET /showappointments → All appointments
+GET /approve/{id} → Approve appointment
+GET /cancel/{id} → Cancel appointment
+GET /showdoctors → All doctors
+GET /deletedoctor/{id} → Delete doctor
+GET /updatedoctor/{id} → Edit doctor form
+POST /editdoctor/{id} → Update doctor
+GET /emailview/{id} → Email composition
+POST /sendemail/{id} → Send email
+
+Doctor Routes (Role: 2):
+GET /doctor/appointments → Doctor's appointments
+GET /doctor/user-schedule → Patient schedule view
+POST /doctor/user-schedule → Update patient schedule
+GET /doctor/doctor-schedule → Doctor schedule management
+POST /doctor/doctor-schedule → Update doctor schedule
+
+Controller Methods:
+• HomeController: redirect(), showAppointmentForm(), appointment(), myappointments(), cancel_appoint(), doctors(), doctor_detail(), notifications(), markNotificationRead()
+• AdminController: dashboard(), addview(), upload(), showappointments(), approve(), cancel(), showdoctors(), deletedoctor(), updatedoctor(), editdoctor(), emailview(), sendemail()
+• DoctorController: appointments(), userSchedule(), storeUserSchedule(), doctorSchedule(), updateDoctorSchedule()
+
+---
+
+SLIDE 9: Deployment Guide
+-------------------------
+Production Environment Setup:
+
+1. Server Requirements:
+   - PHP 8.0+
+   - MySQL 8.0+
+   - Nginx/Apache
+   - SSL Certificate
+   - Redis (optional)
+
+2. Environment Configuration:
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://yourdomain.com
+   DB_CONNECTION=mysql
+   DB_HOST=localhost
+   DB_DATABASE=hospital_db
+   DB_USERNAME=your_db_user
+   DB_PASSWORD=your_db_password
+
+3. Web Server Configuration (Nginx example provided)
+
+4. SSL Setup (certbot)
+
+5. Queue Worker (optional)
+
+Security Considerations:
+- Enable HTTPS
+- Use strong passwords
+- Regular security updates
+- File upload restrictions
+- CSRF protection
+- Input validation and sanitization
+
+---
+
+
+
+SLIDE 10: Future Enhancements
+-----------------------------
+Planned Features:
+
+1. Real-time Chat: Doctor-patient communication, secure messaging, file sharing
+
+2. Mobile Application: React Native/Flutter app, push notifications, offline booking
+
+3. Advanced Scheduling: Calendar integration, recurring appointments, automated reminders
+
+4. Medical Records Management: Patient history, prescription management, test results
+
+5. Reporting System: Appointment statistics, doctor performance, department analytics
+
+6. Payment Integration: Online payments, insurance claims, billing system
+
+
+
+SLIDE 12: Conclusion
+--------------------
+The Hospital Management System represents a robust foundation for modern healthcare management. Built with Laravel's powerful features and following best practices, it provides a scalable solution for hospitals and clinics.
+
+

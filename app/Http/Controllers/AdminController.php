@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Appointment;
 use App\Models\Department;
+use Illuminate\Support\Facades\DB;
 use Notification;
 use App\Notifications\MyFirstNotification;
 
@@ -16,19 +17,26 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        if(Auth::check() && Auth::user()->usertype == 1)
+        if(Auth::check() && Auth::user()->usertype == '1')
         {
             $totalDoctors = Doctor::count();
-            $totalPatients = User::where('usertype', '0')->count();
+            $totalPatients = User::where('usertype', '0')->count(); // assuming usertype 0 is patient
             $totalAppointments = Appointment::count();
-            $approvedAppointments = Appointment::where('status', 'Approved')->count();
-            $pendingAppointments = Appointment::where('status', 'In Progress')->count();
-            $cancelledAppointments = Appointment::where('status', 'Cancelled')->count();
             $totalDepartments = Department::count();
+            $approvedAppointments = Appointment::where('status', 'Approved')->count();
+            $pendingAppointments = Appointment::where('status', 'In Progress')->orWhereNull('status')->count();
+            $cancelledAppointments = Appointment::where('status', 'Cancelled')->count();
+            $usersWithBookings = Appointment::distinct('user_id')->count('user_id');
 
             return view('admin.dashboard', compact(
-                'totalDoctors', 'totalPatients', 'totalAppointments',
-                'approvedAppointments', 'pendingAppointments', 'cancelledAppointments', 'totalDepartments'
+                'totalDoctors',
+                'totalPatients',
+                'totalAppointments',
+                'totalDepartments',
+                'approvedAppointments',
+                'pendingAppointments',
+                'cancelledAppointments',
+                'usersWithBookings'
             ));
         }
         else
@@ -42,7 +50,7 @@ class AdminController extends Controller
         if(Auth::check())
         {
             $user = Auth::user();
-            if($user && $user->usertype == 1)
+            if($user && $user->usertype == '1')
             {
                 return view('admin.add_doctor');
             }
@@ -63,6 +71,7 @@ class AdminController extends Controller
             'number' => 'required|string|max:255',
             'speciality' => 'required|string|max:255',
             'room' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -90,6 +99,8 @@ class AdminController extends Controller
         $doctor->phone = $request->number;
         $doctor->room = $request->room;
         $doctor->speciality = $request->speciality;
+        $doctor->department_id = $request->department_id;
+        $doctor->working_hours = $request->working_hours;
         $doctor->user_id = $user->id;
 
         $doctor->save();
@@ -105,12 +116,12 @@ class AdminController extends Controller
             if($user && ($user->usertype == 1 || $user->usertype == '2'))
             {
                 if($user->usertype == 1){
-                    $data = Appointment::all();
+                    $data = Appointment::with('department')->get();
                 } else {
                     // For doctor, find doctor record
                     $doctor = Doctor::where('user_id', $user->id)->first();
                     if($doctor){
-                        $data = Appointment::where('doctor', $doctor->name)->get();
+                        $data = Appointment::with('department')->where('doctor', $doctor->name)->get();
                     } else {
                         $data = collect();
                     }
@@ -154,7 +165,7 @@ class AdminController extends Controller
             $user = Auth::user();
             if($user && $user->usertype == 1)
             {
-                $data=Doctor::all();
+                $data=Doctor::with('department')->get();
                 return view('admin.showdoctors', compact('data'));
             }
             else
@@ -185,20 +196,29 @@ class AdminController extends Controller
 
     public function editdoctor(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+            'speciality' => 'required|string|max:255',
+            'room' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
         $doctor=Doctor::find($id);
 
         $doctor->name=$request->name;
         $doctor->phone=$request->number;
         $doctor->speciality=$request->speciality;
         $doctor->room=$request->room;
+        $doctor->department_id=$request->department_id;
         $doctor->education=$request->education;
         $doctor->experience_years=$request->experience_years;
         $doctor->biography=$request->biography;
         $doctor->languages=$request->languages;
         $doctor->certifications=$request->certifications;
         $doctor->awards=$request->awards;
-        $doctor->working_hours=$request->working_hours;
         $doctor->address=$request->address;
+        $doctor->working_hours=$request->working_hours;
 
         $image=$request->file('file');
         if($image)
@@ -348,6 +368,39 @@ class AdminController extends Controller
             $user->status = false;
             $user->save();
             return redirect()->back()->with('message', 'User deactivated successfully!');
+        }
+        else
+        {
+            return redirect('home');
+        }
+    }
+
+    public function showschedules()
+    {
+        if(Auth::check() && Auth::user()->usertype == 1)
+        {
+            $doctors = Doctor::with('department')->get();
+            return view('admin.schedules', compact('doctors'));
+        }
+        else
+        {
+            return redirect('home');
+        }
+    }
+
+    public function updateschedule(Request $request, $id)
+    {
+        if(Auth::check() && Auth::user()->usertype == 1)
+        {
+            $request->validate([
+                'working_hours' => 'nullable|string',
+            ]);
+
+            $doctor = Doctor::findOrFail($id);
+            $doctor->working_hours = $request->working_hours;
+            $doctor->save();
+
+            return redirect()->back()->with('message', 'Doctor schedule updated successfully!');
         }
         else
         {

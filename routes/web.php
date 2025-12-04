@@ -1,10 +1,14 @@
 <?php
 
+
+
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\AdminController;
+
+use App\Http\Controllers\DoctorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,13 +21,17 @@ use App\Http\Controllers\AdminController;
 */
 
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', function () {
+    return redirect('/login');
+});
 
 Route::get('/home', [HomeController::class, 'redirect']);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 
 Route::get('/add_doctor_view', [AdminController::class, 'addview']);
 
@@ -59,27 +67,26 @@ Route::post('/sendemail/{id}', [AdminController::class, 'sendemail']);
 
 Route::get('/doctor_view', [HomeController::class, 'doctor_view']);
 
-Route::get('/doctor/{id}', [HomeController::class, 'doctor_detail']);
-
 Route::get('/news', [HomeController::class, 'news']);
 
-Route::middleware(['auth', 'role:2'])->group(function () {
-    Route::get('/doctor/dashboard', [App\Http\Controllers\DoctorController::class, 'dashboard']);
-    Route::get('/doctor/patients', [App\Http\Controllers\DoctorController::class, 'patients']);
-    Route::get('/doctor/schedule', [App\Http\Controllers\DoctorController::class, 'schedule']);
-    Route::post('/doctor/schedule', [App\Http\Controllers\DoctorController::class, 'updateSchedule']);
-});
-    
+Route::get('/notifications', [HomeController::class, 'notifications']);
+
+Route::get('/notification/read/{id}', [HomeController::class, 'markNotificationRead']);
+
+Route::get('/doctor/appointments', [DoctorController::class, 'appointments']);
+Route::get('/doctor/user-schedule', [DoctorController::class, 'userSchedule']);
+Route::post('/doctor/user-schedule', [DoctorController::class, 'storeUserSchedule']);
+Route::get('/doctor/doctor-schedule', [DoctorController::class, 'doctorSchedule']);
+Route::post('/doctor/doctor-schedule', [DoctorController::class, 'updateDoctorSchedule']);
+
+Route::get('/doctor/{id}', [HomeController::class, 'doctor_detail']);
+
+
     Route::middleware(['auth', 'role:1'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/admin/departments', [AdminController::class, 'showdepartments']);
-        Route::get('/admin/add_department', [AdminController::class, 'adddepartmentview']);
-        Route::post('/admin/add_department', [AdminController::class, 'adddepartment']);
-        Route::get('/admin/department/{id}/edit', [AdminController::class, 'editdepartmentview']);
-        Route::post('/admin/department/{id}/edit', [AdminController::class, 'editdepartment']);
-        Route::get('/admin/department/{id}/delete', [AdminController::class, 'deletedepartment']);
-    
-        Route::get('/admin/users', [AdminController::class, 'showusers']);
-        Route::get('/admin/user/{id}/activate', [AdminController::class, 'activateuser']);
-        Route::get('/admin/user/{id}/deactivate', [AdminController::class, 'deactivateuser']);
+        Route::post('/admin/departments', [AdminController::class, 'adddepartment']);
+        Route::post('/admin/departments/{id}', [AdminController::class, 'editdepartment']);
+        Route::delete('/admin/departments/{id}', [AdminController::class, 'deletedepartment']);
+        Route::get('/admin/schedules', [AdminController::class, 'showschedules']);
+        Route::post('/admin/schedules/{id}', [AdminController::class, 'updateschedule']);
     });

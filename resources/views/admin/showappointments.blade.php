@@ -1,62 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    @include('admin.css')
-  </head>
-  <body>
-    <div class="container-scroller">
-        <!-- partial:partials/_sidebar.html -->
+@extends('admin.layout')
 
-        @include('admin.sidebar')
-      
-        <!-- partial -->
+@section('title', 'All Appointments')
 
-        @include('admin.navbar')
+@section('content')
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">All Appointments</h2>
+    </div>
+</div>
 
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            <div align="center" style="padding-top: 20px;">
-                <table>
-                    <tr style="background-color: black;">
-                        <th style="padding: 10px;">Patient Name</th>
-                        <th style="padding: 10px;">Email</th>
-                        <th style="padding: 10px;">Phone</th>
-                        <th style="padding: 10px;">Doctor Name</th>
-                        <th style="padding: 10px;">Date</th>
-                        <th style="padding: 10px;">Message</th>
-                        <th style="padding: 10px;">Status</th>
-                        <th style="padding: 10px;">Approve Appointment</th>
-                        <th style="padding: 10px;">Cancel Appointment</th>
-                        <th style="padding: 10px;">Send Mail</th>
-                    </tr>
-
-                    @foreach ($data as $appoint)
-                    <tr align="center" style="background-color: skyblue;">
-                    
-                        <td>{{$appoint->name}}</td>
-                        <td>{{$appoint->email}}</td>
-                        <td>{{$appoint->phone}}</td>
-                        <td>{{$appoint->doctor}}</td>
-                        <td>{{$appoint->date}}</td>
-                        <td>{{$appoint->message}}</td>
-                        <td>{{$appoint->status}}</td>
-                        <td>
-                            <a class="btn btn-success" href="{{url('approve', $appoint->id)}}">Approve</a>
-                        </td>
-                        <td>
-                            <a class="btn btn-danger" href="{{url('cancel', $appoint->id)}}">Cancel</a>
-                        </td>
-                        <td>
-                            <a class="btn btn-primary" href="{{url('emailview', $appoint->id)}}">Send Mail</a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </table>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data as $appoint)
+                            <tr>
+                                <td>{{ $appoint->name }}</td>
+                                <td>{{ $appoint->email }}</td>
+                                <td>{{ $appoint->phone }}</td>
+                                <td>{{ $appoint->doctor }}</td>
+                                <td>{{ $appoint->department->name ?? 'N/A' }}</td>
+                                <td>{{ $appoint->date }}</td>
+                                <td>{{ $appoint->message }}</td>
+                                <td>
+                                    @if($appoint->status == 'Approved')
+                                        <span class="badge bg-success">{{ $appoint->status }}</span>
+                                    @elseif($appoint->status == 'Cancelled')
+                                        <span class="badge bg-danger">{{ $appoint->status }}</span>
+                                    @else
+                                        <span class="badge bg-warning">{{ $appoint->status }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($appoint->status != 'Approved')
+                                        <a class="btn btn-success btn-sm me-2" href="{{ url('approve', $appoint->id) }}">
+                                            <i class="fas fa-check"></i> Approve
+                                        </a>
+                                    @endif
+                                    @if($appoint->status != 'Cancelled')
+                                        <a class="btn btn-danger btn-sm me-2" href="{{ url('cancel', $appoint->id) }}">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </a>
+                                    @endif
+                                    <a class="btn btn-primary btn-sm" href="{{ url('emailview', $appoint->id) }}">
+                                        <i class="fas fa-envelope"></i> Email
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    @include('admin.script')
-  </body>
-</html>
+    </div>
+</div>
+@endsection

@@ -23,8 +23,14 @@ class HomeController extends Controller
 
                 return view('user.home', compact('doctor'));
             }
+            elseif($user->usertype == '1'){ // Admin
+                return redirect('admin/dashboard');
+            }
+            elseif($user->usertype == '2'){ // Doctor
+                return redirect('doctor/appointments');
+            }
             else{
-                return view('admin.home');
+                return redirect('/');
             }
 
         }
@@ -42,8 +48,14 @@ class HomeController extends Controller
                 $doctor = Doctor::all();
                 return view('user.home', compact('doctor'));
             }
+            elseif($user->usertype == '1'){ // Admin
+                return redirect('admin/dashboard');
+            }
+            elseif($user->usertype == '2'){ // Doctor
+                return redirect('doctor/appointments');
+            }
             else{
-                return view('admin.home');
+                return redirect('/');
             }
         }
         else{
@@ -71,6 +83,9 @@ class HomeController extends Controller
 
         $data = new Appointment;
 
+        $doctor = Doctor::where('name', $request->doctor)->first();
+        $department_id = $doctor ? $doctor->department_id : null;
+
         $data->name = $request->name;
         $data->email = $request->email;
         $data->phone = $request->number;
@@ -79,6 +94,7 @@ class HomeController extends Controller
         $data->message = $request->message;
         $data->status = 'In Progress';
         $data->user_id = Auth::user()->id;
+        $data->department_id = $department_id;
 
         $data->save();
 
@@ -141,5 +157,40 @@ class HomeController extends Controller
     public function news()
     {
         return view('user.news');
+    }
+
+    public function notifications()
+    {
+        if(Auth::check())
+        {
+            $user = Auth::user();
+            if($user && $user->usertype == 0)
+            {
+                $notifications = $user->notifications()->paginate(10);
+                return view('user.notifications', compact('notifications'));
+            }
+            else
+            {
+                return redirect('login');
+            }
+        }
+        else
+        {
+            return redirect()->back();
+        }
+    }
+
+    public function markNotificationRead($id)
+    {
+        if(Auth::check())
+        {
+            $user = Auth::user();
+            $notification = $user->notifications()->find($id);
+            if($notification) {
+                $notification->markAsRead();
+            }
+            return redirect()->back();
+        }
+        return redirect('/login');
     }
 }
